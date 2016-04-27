@@ -1,0 +1,4 @@
+[submodule "proto"]
+	path = proto
+	url = git@github.com:dretay/labrack-proto.git
+  ignore = all
