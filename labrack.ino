@@ -1,21 +1,14 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <pb_common.h>
-#include <pb.h>
 #include <Wire.h>
 #include <eRCaGuy_analogReadXXbit.h>
 #include <EEPROM.h>
-#include "../nanobuff/models/simple.pb.c"
+#include "simple.pb.c"
 
 //defines
 #define SLAVE_ADDRESS 0x04
 #define FLOATS_TO_SEND 2
-
-//types
-typedef struct sensorCommand_t{
-	byte cmd;
-	float value;
-};
 
 float data[FLOATS_TO_SEND] = { 0.00f, 0.00f };
 
@@ -114,9 +107,10 @@ void loop() {
 
 // callback for received data
 void receiveData(int byteCount){
-	uint8_t buffer[128];
-	size_t message_length = 128;
-	SimpleMessage message = SimpleMessage_init_zero;
+	const size_t message_length = 128;
+	uint8_t buffer[message_length] = { NULL };
+	
+	CommandMessage message = CommandMessage_init_zero;
 	bool status;
 	int i = 0;
 
@@ -126,18 +120,17 @@ void receiveData(int byteCount){
 	}
 	/* Create a stream that reads from the buffer. */
 	pb_istream_t stream = pb_istream_from_buffer(buffer, message_length);
-	//Serial.println("Received: ");
+	////Serial.println("Received: ");
 
 	/* Now we are ready to decode the message. */
-	status = pb_decode(&stream, SimpleMessage_fields, &message);
+	status = pb_decode(&stream, CommandMessage_fields, &message);
 	if (!status)
 	{
 		Serial.print("Decoding failed : ");
 		Serial.println(PB_GET_ERROR(&stream));
 	}
 	else{
-
-	//	/*Serial.println(message.lucky_number);
+		Serial.println(message.verb);
 	//	byte data_buffer[sizeof(sensorCommand_t)];
 	//	int i = 0;
 	//	sensorCommand_t* tmp;
@@ -147,9 +140,9 @@ void receiveData(int byteCount){
 	//	i++;
 	//	}
 	//	tmp = (sensorCommand_t*)data_buffer;*/
-		Serial.println("Received: ");
-		Serial.println(message.lucky_number);
-		inputMagicNumber = message.lucky_number;
+	//	Serial.println("Received: ");
+	//	Serial.println(message.lucky_number);
+	//	inputMagicNumber = message.lucky_number;
 	}
 	//todo: clean this up a lot
 	//analogWrite(CURRENT_PWM_PIN, (255 * (tmp->value / 3.3)));
@@ -157,25 +150,25 @@ void receiveData(int byteCount){
 
 // callback for sending data
 void sendData(){
-	bool status;
-	size_t message_length;
+//	bool status;
+//	size_t message_length;
 	uint8_t buffer[128];
-	
-	SimpleMessage message = SimpleMessage_init_zero;
-	pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-	message.lucky_number = inputMagicNumber+1;
-	Serial.println("Sending back: ");
-	Serial.println(message.lucky_number);
-	status = pb_encode(&stream, SimpleMessage_fields, &message);
-	message_length = stream.bytes_written;
-	
-	if (!status)
-	{
-		printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));		
-	}
-	
-	{
-		
-	}
-	Wire.write(buffer, message_length);
+//	
+//	SimpleMessage message = SimpleMessage_init_zero;
+//	pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+//	message.lucky_number = inputMagicNumber+1;
+//	Serial.println("Sending back: ");
+//	Serial.println(message.lucky_number);
+//	status = pb_encode(&stream, SimpleMessage_fields, &message);
+//	message_length = stream.bytes_written;
+//	
+//	if (!status)
+//	{
+//		printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));		
+//	}
+//	
+//	{
+//		
+//	}
+//	Wire.write(buffer, message_length);
 }

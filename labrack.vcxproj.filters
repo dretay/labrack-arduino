@@ -16,6 +16,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="labrack.ino" />
+    <None Include="Makefile">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="proto\simple.proto">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.labrack.vsarduino.h">
